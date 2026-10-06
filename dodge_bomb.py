@@ -60,7 +60,29 @@ def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
     return yoko,tate
 
 
+def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
+    kk_base = pg.image.load("fig/3.png")
+
+    left = kk_base
+    right = pg.transform.flip(kk_base, True, False)
+
+    kk_imgs = {
+        (-5, 0): pg.transform.rotozoom(left, 0, 0.9),     # 左
+        (-5,-5): pg.transform.rotozoom(left, -45, 0.9),   # 左上
+        (-5,+5): pg.transform.rotozoom(left, 45, 0.9),    # 左下
+
+        (+5, 0): pg.transform.rotozoom(right, 0, 0.9),     # 右
+        (+5,-5): pg.transform.rotozoom(right, 45, 0.9),   # 右上
+        (+5,+5): pg.transform.rotozoom(right, -45, 0.9),    # 右下
+        (0, -5): pg.transform.rotozoom(right, 90, 0.9),   # 上（肚子在右）
+        (0, +5): pg.transform.rotozoom(right, -90, 0.9),    # 下（肚子在右）
+
+        (0, 0): pg.transform.rotozoom(left, 0, 0.9),
+    }
+    return kk_imgs
+
 def main():
+    kk_imgs = get_kk_imgs()
     bb_imgs, bb_accs = init_bb_imgs()
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -106,8 +128,13 @@ def main():
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
         bb_rct.move_ip(avx,avy)
-        screen.blit(kk_img, kk_rct)
         screen.blit(bb_img, bb_rct)
+        mv_tuple = (sum_mv[0], sum_mv[1])
+        if mv_tuple not in kk_imgs:
+            mv_tuple = (0, 0)
+        kk_img = kk_imgs[mv_tuple]
+        screen.blit(kk_img, kk_rct)
+
         yoko,tate = check_bound(bb_rct)
         if not yoko:
             vx *= -1
