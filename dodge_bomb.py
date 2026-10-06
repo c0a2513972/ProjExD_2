@@ -13,6 +13,31 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+def gameover(screen:pg.Surface) -> None:
+    black_sfc = pg.Surface((WIDTH, HEIGHT))
+    black_sfc.fill((0, 0, 0))
+    black_sfc.set_alpha(150)
+
+    font = pg.font.Font(None, 80)
+    txt_sfc = font.render("Game Over", True, (255, 255, 255))
+    txt_rct = txt_sfc.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+    left_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.0)
+    left_rct = left_img.get_rect(center=(WIDTH//2 - 200, HEIGHT//2 ))
+
+    right_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 1.0)
+    right_rct = right_img.get_rect(center=(WIDTH//2 + 200, HEIGHT//2 ))
+    
+    screen.blit(black_sfc, (0, 0))
+    screen.blit(txt_sfc, txt_rct)
+    screen.blit(right_img, right_rct)
+    screen.blit(left_img,left_rct)
+
+    pg.display.update()
+    pg.time.wait(5000)
+
+
+
 
 def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
     yoko,tate = True,True
@@ -46,7 +71,7 @@ def main():
         screen.blit(bg_img, [0, 0])
 
         if kk_rct.colliderect(bb_rct):
-            print("game over")
+            gameover(screen)
             return
 
 
