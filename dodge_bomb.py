@@ -37,6 +37,18 @@ def gameover(screen:pg.Surface) -> None:
     pg.time.wait(5000)
 
 
+def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
+    bb_imgs = []
+    bb_accs = [a for a in range(1, 11)]
+
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        bb_img.set_colorkey((0, 0, 0))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_imgs.append(bb_img)
+    return bb_imgs, bb_accs
+
+
 
 
 def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
@@ -49,22 +61,29 @@ def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
 
 
 def main():
+    bb_imgs, bb_accs = init_bb_imgs()
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img = pg.Surface((20,20))
-    pg.draw.circle(bb_img,(255,0,0),(10,10),10)
-    bb_img.set_colorkey((0,0,0))
+    bb_img = bb_imgs[0]
     bb_rct = bb_img.get_rect()
-    bb_rct.centerx = random.randint(0,WIDTH)
-    bb_rct.centery = random.randint(0,HEIGHT)
+    bb_rct.centerx = random.randint(0, WIDTH)
+    bb_rct.centery = random.randint(0, HEIGHT)
     vx , vy = +5, +5
     clock = pg.time.Clock()
     tmr = 0
     while True:
+
+        idx = min(tmr // 500, 9)
+        avx = vx * bb_accs[idx]
+        avy = vy * bb_accs[idx]
+        bb_img = bb_imgs[idx]
+        old_center = bb_rct.center
+        bb_rct = bb_img.get_rect()
+        bb_rct.center = old_center
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
@@ -86,7 +105,7 @@ def main():
         kk_rct.move_ip(sum_mv)
         if check_bound(kk_rct) != (True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])
-        bb_rct.move_ip(vx,vy)
+        bb_rct.move_ip(avx,avy)
         screen.blit(kk_img, kk_rct)
         screen.blit(bb_img, bb_rct)
         yoko,tate = check_bound(bb_rct)
