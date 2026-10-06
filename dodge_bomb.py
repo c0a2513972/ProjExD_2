@@ -13,6 +13,7 @@ DELTA = {
 }
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
+
 def gameover(screen:pg.Surface) -> None:
     black_sfc = pg.Surface((WIDTH, HEIGHT))
     black_sfc.fill((0, 0, 0))
@@ -49,8 +50,6 @@ def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
     return bb_imgs, bb_accs
 
 
-
-
 def check_bound(rect:pg.Rect) -> tuple[bool,bool]:
     yoko,tate = True,True
     if rect.left < 0 or WIDTH < rect.right:
@@ -70,16 +69,15 @@ def get_kk_imgs() -> dict[tuple[int, int], pg.Surface]:
         (-5, 0): pg.transform.rotozoom(left, 0, 0.9),     # 左
         (-5,-5): pg.transform.rotozoom(left, -45, 0.9),   # 左上
         (-5,+5): pg.transform.rotozoom(left, 45, 0.9),    # 左下
-
         (+5, 0): pg.transform.rotozoom(right, 0, 0.9),     # 右
         (+5,-5): pg.transform.rotozoom(right, 45, 0.9),   # 右上
         (+5,+5): pg.transform.rotozoom(right, -45, 0.9),    # 右下
-        (0, -5): pg.transform.rotozoom(right, 90, 0.9),   # 上（肚子在右）
-        (0, +5): pg.transform.rotozoom(right, -90, 0.9),    # 下（肚子在右）
-
+        (0, -5): pg.transform.rotozoom(right, 90, 0.9),   # 上
+        (0, +5): pg.transform.rotozoom(right, -90, 0.9),    # 下
         (0, 0): pg.transform.rotozoom(left, 0, 0.9),
     }
     return kk_imgs
+
 
 def main():
     kk_imgs = get_kk_imgs()
@@ -114,7 +112,6 @@ def main():
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             return
-
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
